@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class gSpots : MonoBehaviour {
 
@@ -16,17 +17,33 @@ public class gSpots : MonoBehaviour {
 	public float slapRadius;
 	[Tooltip("Amount of points to be reduce when a slap point disappears")]
 	public int destroyPointAmount;
+
 	[Tooltip("Seconds between each slap point creation")]
 	public int creationTimeInterval;
+	private int _creationTimeInterval;
 	[Tooltip("Seconds between each slap point destruction")]
 	public int destroyTimeInterval;
+	private int _destroyTimeInterval;
 
 	// Slap points prefab
 	[Tooltip("Slap point to be hit by the user")]
 	public GameObject slapPoint;
 
+	// Pleasure meter: Score feedback meter
+	[Tooltip("Score meter")]
+	public Slider pleasureSlider;
+
 	void Start () {
 		StartCoroutine (CreateSlapPoints());
+		ScoreCalculations.OnScoreZoneEnter += ChangeTimeIntervals;
+
+		// Sets orginal time intervals
+		_creationTimeInterval = creationTimeInterval;
+		_destroyTimeInterval = destroyTimeInterval;
+	}
+
+	void OnDestroy() {
+		ScoreCalculations.OnScoreZoneEnter -= ChangeTimeIntervals;
 	}
 
 	IEnumerator CreateSlapPoints() {
@@ -39,27 +56,39 @@ public class gSpots : MonoBehaviour {
 				if (hit.collider.CompareTag (Tags.CULITO)) {
 					Debug.DrawRay (transform.position, directionVector);
 					GameObject slapObj = Instantiate (slapPoint, hit.point - directionVector * 0.1f, Quaternion.identity) as GameObject;
-//
-					this.InvokeAfterSeconds(destroyTimeInterval, () => {
+					// Destroys the slap point
+					this.InvokeAfterSeconds(_destroyTimeInterval, () => {
 						if(slapObj == null) return;
-
 						Destroy(slapObj);
-						// TODO QUITAR PUNTOS
+						// Decreases player score
 						if(OnSlapDestroyed != null) OnSlapDestroyed(destroyPointAmount);
 					});
-//					GameObject sphere = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-//					Vector3 spherePosition = hit.point - directionVector * 0.1f;
-//					sphere.transform.position = spherePosition;
-//					sphere.transform.localScale = new Vector3 (0.5f, 0.5f, 0.5f);
-//					sphere.tag = Tags.SLAP_POINT;
 
 					// Return to frame renderer
-					yield return new WaitForSeconds(creationTimeInterval);
+					yield return new WaitForSeconds(_creationTimeInterval);
 				}
 			}
 
 		}
 	}
 
-
+	void ChangeTimeIntervals (int range) {
+		Debug.Log ("ChangeTimeIntervals");
+		switch (range) {
+		case 0:
+			_creationTimeInterval = creationTimeInterval;
+			_destroyTimeInterval = destroyTimeInterval * 2;
+			break;
+		case 1:
+			_creationTimeInterval = creationTimeInterval;
+			_destroyTimeInterval = destroyTimeInterval;
+			break;
+		case 2:
+			_creationTimeInterval = creationTimeInterval / 2;
+			_destroyTimeInterval = destroyTimeInterval / 2;
+			break;
+		default:
+			break;
+		}
+	}
 }

@@ -22,8 +22,17 @@ public class ScoreCalculations : MonoBehaviour {
 	// Force meter: How much point does it earns when slap the butt
 	[Tooltip("Hit power meter")]
 	public Slider powerSlider;
+
 	// For points calculation
-	private Range[] _pleasureRanges;
+
+	// Ranges for power meter
+	private Range[] _powerRanges;
+	// Ranges for slap points creation (score's ranges)
+	private Range[] _scoreRanges;
+
+	// For slap points creation/destruction time interval
+	public delegate void SetScoreZoneEvent(int range);
+	public static event SetScoreZoneEvent OnScoreZoneEnter;
 
 	struct Range {
 		private float _minVal;
@@ -62,13 +71,20 @@ public class ScoreCalculations : MonoBehaviour {
 		inputController.OnTouchDown += GetTouchDown;	
 		gSpots.OnSlapDestroyed += ReducePoints;
 
-		// Create pleasure zones for point calculations
-		_pleasureRanges = new Range[4];
-		float pleasureInterval = powerSlider.maxValue / 4.0f;
-		_pleasureRanges [0] = new Range (0, pleasureInterval);
-		_pleasureRanges [1] = new Range (0, pleasureInterval * 2);
-		_pleasureRanges [2] = new Range (0, pleasureInterval * 3);
-		_pleasureRanges [3] = new Range (0, pleasureInterval * 4);
+		// Create power zones for point calculations
+		_powerRanges = new Range[4];
+		float powerInterval = powerSlider.maxValue / 4.0f;
+		_powerRanges [0] = new Range (0, powerInterval);
+		_powerRanges [1] = new Range (powerInterval, powerInterval * 2);
+		_powerRanges [2] = new Range (powerInterval * 2, powerInterval * 3);
+		_powerRanges [3] = new Range (powerInterval * 3, powerInterval * 4);
+
+		// Create score zones for slap points creation
+		_scoreRanges = new Range[3];
+		float scoreInterval = pleasureSlider.maxValue / 3.0f;
+		_scoreRanges [0] = new Range (0, scoreInterval);
+		_scoreRanges [1] = new Range (scoreInterval, scoreInterval * 2);
+		_scoreRanges [2] = new Range (scoreInterval * 2, scoreInterval * 3);
 	}
 
 	void OnDestroy() {
@@ -93,14 +109,16 @@ public class ScoreCalculations : MonoBehaviour {
 	}
 
 	// Method for points loss
-	void ReducePoints(int amount){
-		pleasurePoints -= amount;
+	void ReducePoints(int amount) {
 
-		pleasureSlider.value = pleasurePoints;
+		pleasureSlider.value -= amount;
 
 		if(pleasurePoints <= 0) {
 			//TODO: FRIENDZONE DUDE
 		}
+
+		// Calculates the score zone for the slap points creation/destuction
+		CalculateScoreZone ();
 	}
 
 	// Method for points gain
@@ -111,7 +129,7 @@ public class ScoreCalculations : MonoBehaviour {
 		// Sets the points according to the power meter
 		int range = 0;
 		for(range = 0; range < 4; range++) {
-			if (_pleasureRanges [range].Contains (power)) {
+			if (_powerRanges [range].Contains (power)) {
 				break;
 			}
 		}
@@ -135,6 +153,18 @@ public class ScoreCalculations : MonoBehaviour {
 			break;
 		default:
 			break;
+		}
+
+		// Calculates the score zone for the slap points creation/destuction
+		CalculateScoreZone ();
+	}
+
+	void CalculateScoreZone() {
+		for(int range = 0; range < 3; range++) {
+			if (_scoreRanges [range].Contains (pleasureSlider.value)) {
+				if (OnScoreZoneEnter != null) OnScoreZoneEnter (range);
+				break;
+			}
 		}
 	}
 }
