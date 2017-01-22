@@ -17,9 +17,9 @@ public class gSpots : MonoBehaviour {
 	[Tooltip("Amount of points to be reduce when a slap point disappears")]
 	public int destroyPointAmount;
 	[Tooltip("Seconds between each slap point creation")]
-	public float creationTimeInterval;
+	public int creationTimeInterval;
 	[Tooltip("Seconds between each slap point destruction")]
-	public float destroyTimeInterval;
+	public int destroyTimeInterval;
 
 	// Slap points prefab
 	[Tooltip("Slap point to be hit by the user")]
