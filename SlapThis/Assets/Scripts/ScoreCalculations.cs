@@ -5,15 +5,22 @@ using UnityEngine.UI;
 
 public class ScoreCalculations : MonoBehaviour {
 
+	[Header("User input")]
 	// User controls broadcaster
+	[Tooltip("User controllers input manager")]
 	public InputController inputController;
+
+	[Header("Score calculation")]
 	// Points for every action
+	[Tooltip("Default score slider value")]
 	public int pleasurePoints;
-	public int hitSuccessPointsAmount;
+	[Tooltip("Point penalty for every hit failed")]
 	public int hitFailReducePointsAmount;
 	// Pleasure meter: Score feedback meter
+	[Tooltip("Score meter")]
 	public Slider pleasureSlider;
 	// Force meter: How much point does it earns when slap the butt
+	[Tooltip("Hit power meter")]
 	public Slider powerSlider;
 	// For points calculation
 	private Range[] _pleasureRanges;
@@ -73,8 +80,6 @@ public class ScoreCalculations : MonoBehaviour {
 	void GetTouchDown(Vector3 touchPosition) {
 		RaycastHit hit;
 		if (Physics.Raycast(touchPosition,Vector3.forward, out hit)) {
-
-			Debug.DrawRay (touchPosition, Vector3.forward);
 			// When touched a slap point
 			if (hit.collider.CompareTag (Tags.SLAP_POINT)) {
 				Destroy (hit.transform.gameObject);
@@ -82,8 +87,6 @@ public class ScoreCalculations : MonoBehaviour {
 			}
 			// When missed a slap point, reduce excite points
 			else {
-				// TODO QUITAR PUNTOS
-
 				ReducePoints(hitFailReducePointsAmount);
 			}
 		}
