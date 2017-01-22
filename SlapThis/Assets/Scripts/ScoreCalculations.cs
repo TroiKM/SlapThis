@@ -15,12 +15,53 @@ public class ScoreCalculations : MonoBehaviour {
 	public Slider pleasureSlider;
 	// Force meter: How much point does it earns when slap the butt
 	public Slider powerSlider;
+	// For points calculation
+	private Range[] _pleasureRanges;
+
+	struct Range {
+		private float _minVal;
+		private float _maxVal;
+
+		public Range(float min, float max) {
+			this._minVal = min;
+			this._maxVal = max;
+		}
+
+		public float Min {
+			get {
+				return _minVal;
+			}
+			set {
+				_minVal = value; 
+			}
+		}
+
+		public float Max {
+			get {
+				return _maxVal;
+			}
+			set {
+				_maxVal = value; 
+			}
+		}
+
+		public bool Contains(float x) {
+			return (x == _minVal || x == _maxVal || (x > _minVal && x < _maxVal));
+		}
+	}
 
 	// Use this for initialization
 	void Start () {
-		
 		inputController.OnTouchDown += GetTouchDown;	
 		gSpots.OnSlapDestroyed += ReducePoints;
+
+		// Create pleasure zones for point calculations
+		_pleasureRanges = new Range[4];
+		float pleasureInterval = powerSlider.maxValue / 4.0f;
+		_pleasureRanges [0] = new Range (0, pleasureInterval);
+		_pleasureRanges [1] = new Range (0, pleasureInterval * 2);
+		_pleasureRanges [2] = new Range (0, pleasureInterval * 3);
+		_pleasureRanges [3] = new Range (0, pleasureInterval * 4);
 	}
 
 	void OnDestroy() {
@@ -37,7 +78,7 @@ public class ScoreCalculations : MonoBehaviour {
 			// When touched a slap point
 			if (hit.collider.CompareTag (Tags.SLAP_POINT)) {
 				Destroy (hit.transform.gameObject);
-				ReducePoints (-hitSuccessPointsAmount);
+				IncresasePoints();
 			}
 			// When missed a slap point, reduce excite points
 			else {
@@ -64,7 +105,33 @@ public class ScoreCalculations : MonoBehaviour {
 		// Get the amount of the slap's power
 		float power = powerSlider.value;
 
-		// TODO CREAR LA CONVERSION DE FUERZA A PUNTOS
+		// Sets the points according to the power meter
+		int range = 0;
+		for(range = 0; range < 4; range++) {
+			if (_pleasureRanges [range].Contains (power)) {
+				break;
+			}
+		}
 
+		switch (range) {
+		// Very low pleasure
+		case 0:
+			pleasureSlider.value += 2;
+			break;
+		// Low pleasure
+		case 1:
+			pleasureSlider.value += 3;
+			break;
+		// Normal pleasure
+		case 2:
+			pleasureSlider.value += 4;
+			break;
+		// High pleasure
+		case 3:
+			pleasureSlider.value += 5;
+			break;
+		default:
+			break;
+		}
 	}
 }
