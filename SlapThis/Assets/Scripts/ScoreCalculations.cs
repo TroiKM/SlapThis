@@ -22,6 +22,9 @@ public class ScoreCalculations : MonoBehaviour {
 	// Force meter: How much point does it earns when slap the butt
 	[Tooltip("Hit power meter")]
 	public Slider powerSlider;
+	[Tooltip("Audio clips for different power meter's")]
+	public AudioClip[] slapClips;
+	public AudioSource audioSource;
 
 	// For points calculation
 
@@ -138,18 +141,22 @@ public class ScoreCalculations : MonoBehaviour {
 		// Very low pleasure
 		case 0:
 			pleasureSlider.value += 2;
+			audioSource.PlayOneShot(slapClips[0]);
 			break;
 		// Low pleasure
 		case 1:
 			pleasureSlider.value += 3;
+			audioSource.PlayOneShot(slapClips[1]);
 			break;
 		// Normal pleasure
 		case 2:
 			pleasureSlider.value += 4;
+			audioSource.PlayOneShot(slapClips[2]);
 			break;
 		// High pleasure
 		case 3:
 			pleasureSlider.value += 5;
+			audioSource.PlayOneShot(slapClips[3]);
 			break;
 		default:
 			break;
