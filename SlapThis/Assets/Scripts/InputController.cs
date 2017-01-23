@@ -75,8 +75,10 @@ public class InputController : MonoBehaviour {
 			if (TouchPhase.Began == touch.phase)
 			{
 				var worldPos = touch.position.ToWorldPos(); //ToWorldPos(touch.position);
+				//Since touch.position is a vector 2, add z position from the main camera
+				Vector3 worldPos3 = worldPos.ToVector3(Camera.main.transform.position.z);
 				m_DownPosition = worldPos;
-				if (OnTouchDown != null) OnTouchDown(worldPos);
+				if (OnTouchDown != null) OnTouchDown(worldPos3);
 			}
 			else if (TouchPhase.Moved == touch.phase)
 			{
