@@ -8,4 +8,8 @@ public class UIMainMenu : MonoBehaviour {
 	public void ChargeLevel(string level){
 		SceneManager.LoadScene (level);
 	}
+
+    public void RestartLevel() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 }
