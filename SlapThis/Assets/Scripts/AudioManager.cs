@@ -17,8 +17,8 @@ public class AudioManager : MonoBehaviour {
         }
     }
 
-    public AudioSource[] slaps;
-    public AudioSource backgroundMusic;
+    public AudioClip[] slaps;
+    public AudioClip backgroundMusic;
 
     // Use this for initialization
     void Start() {
