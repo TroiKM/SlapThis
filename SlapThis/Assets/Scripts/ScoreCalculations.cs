@@ -9,6 +9,8 @@ public class ScoreCalculations : MonoBehaviour {
 	// User controls broadcaster
 	[Tooltip("User controllers input manager")]
 	public InputController inputController;
+	[Tooltip("Prefab for slap effect")]
+	public GameObject slapEffectPrefab;
 
     [Header("Canvas")]
     public GameObject pnlResults;
@@ -38,6 +40,8 @@ public class ScoreCalculations : MonoBehaviour {
 	private Range[] _powerRanges;
 	// Ranges for slap points creation (score's ranges)
 	private Range[] _scoreRanges;
+	//Cached slapEffectObj, based on 'slapEffectPrefab'
+	private GameObject _slapEffect;
 
 	// For slap points creation/destruction time interval
 	public delegate void SetScoreZoneEvent(int range);
@@ -94,6 +98,10 @@ public class ScoreCalculations : MonoBehaviour {
 		_scoreRanges [0] = new Range (0, scoreInterval);
 		_scoreRanges [1] = new Range (scoreInterval, scoreInterval * 2);
 		_scoreRanges [2] = new Range (scoreInterval * 2, scoreInterval * 3);
+
+		//Create slap effect obj
+		_slapEffect = Instantiate (slapEffectPrefab) as GameObject;
+		_slapEffect.SetActive (false);
 	}
 
 	void OnDestroy() {
@@ -115,6 +123,14 @@ public class ScoreCalculations : MonoBehaviour {
 				ReducePoints(hitFailReducePointsAmount);
 			}
 		}
+
+		//de activate and reactivate Game object so animation restarts.
+		_slapEffect.SetActive (false);
+		_slapEffect.SetActive (true);
+
+		//Change Z position so camera can show it
+		touchPosition.Set (touchPosition.x, touchPosition.y, -5);
+		_slapEffect.transform.position = touchPosition;
 	}
 
 	// Method for points loss
