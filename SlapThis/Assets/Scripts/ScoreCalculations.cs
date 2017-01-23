@@ -10,7 +10,14 @@ public class ScoreCalculations : MonoBehaviour {
 	[Tooltip("User controllers input manager")]
 	public InputController inputController;
 
-	[Header("Score calculation")]
+    [Header("Canvas")]
+    //[Tooltip("User controllers input manager")]
+    public GameObject pnlResults;
+    public GameObject sprWin;
+    public GameObject sprLose;
+
+
+    [Header("Score calculation")]
 	// Points for every action
 	[Tooltip("Default score slider value")]
 	public int pleasurePoints;
@@ -117,7 +124,9 @@ public class ScoreCalculations : MonoBehaviour {
 		pleasureSlider.value -= amount;
 
 		if(pleasurePoints <= 0) {
-			//TODO: FRIENDZONE DUDE
+            //TODO: FRIENDZONE DUDE
+            pnlResults.SetActive(true);
+            sprLose.SetActive(true);
 		}
 
 		// Calculates the score zone for the slap points creation/destuction
