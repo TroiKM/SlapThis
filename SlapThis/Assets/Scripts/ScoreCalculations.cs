@@ -114,10 +114,12 @@ public class ScoreCalculations : MonoBehaviour {
 	// Method for points loss
 	void ReducePoints(int amount) {
 
-		pleasureSlider.value -= amount;
-
-		if(pleasurePoints <= 0) {
+		// Checks for losing state
+		if (pleasureSlider.value - amount <= pleasureSlider.minValue) {
 			//TODO: FRIENDZONE DUDE
+			Debug.Log ("FRIENDZONE DUDE");
+		} else {
+			pleasureSlider.value -= amount;
 		}
 
 		// Calculates the score zone for the slap points creation/destuction
@@ -128,6 +130,9 @@ public class ScoreCalculations : MonoBehaviour {
 	void IncresasePoints() {
 		// Get the amount of the slap's power
 		float power = powerSlider.value;
+
+		// Points to gain
+		int pointAmount = 0;
 
 		// Sets the points according to the power meter
 		int range = 0;
@@ -140,33 +145,42 @@ public class ScoreCalculations : MonoBehaviour {
 		switch (range) {
 		// Very low pleasure
 		case 0:
-			pleasureSlider.value += 2;
+			pointAmount = 2;
 			audioSource.PlayOneShot(slapClips[0]);
 			break;
 		// Low pleasure
 		case 1:
-			pleasureSlider.value += 3;
+			pointAmount = 3;
 			audioSource.PlayOneShot(slapClips[1]);
 			break;
 		// Normal pleasure
 		case 2:
-			pleasureSlider.value += 4;
+			pointAmount = 4;
 			audioSource.PlayOneShot(slapClips[2]);
 			break;
 		// High pleasure
 		case 3:
-			pleasureSlider.value += 5;
+			pointAmount = 5;
 			audioSource.PlayOneShot(slapClips[3]);
 			break;
 		default:
 			break;
 		}
 
+		// Checks for winning state
+		if (pleasureSlider.value + pointAmount >= pleasureSlider.maxValue) {
+			Debug.Log ("You Win!");
+		} else {
+			pleasureSlider.value += pointAmount;
+		}
+			
 		// Calculates the score zone for the slap points creation/destuction
 		CalculateScoreZone ();
 	}
 
 	void CalculateScoreZone() {
+
+
 		for(int range = 0; range < 3; range++) {
 			if (_scoreRanges [range].Contains (pleasureSlider.value)) {
 				if (OnScoreZoneEnter != null) OnScoreZoneEnter (range);
