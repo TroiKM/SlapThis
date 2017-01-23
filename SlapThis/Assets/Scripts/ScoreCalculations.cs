@@ -10,7 +10,13 @@ public class ScoreCalculations : MonoBehaviour {
 	[Tooltip("User controllers input manager")]
 	public InputController inputController;
 
-	[Header("Score calculation")]
+    [Header("Canvas")]
+    public GameObject pnlResults;
+    public GameObject sprWin;
+    public GameObject sprLose;
+
+
+    [Header("Score calculation")]
 	// Points for every action
 	[Tooltip("Default score slider value")]
 	public int pleasurePoints;
@@ -116,8 +122,10 @@ public class ScoreCalculations : MonoBehaviour {
 
 		// Checks for losing state
 		if (pleasureSlider.value - amount <= pleasureSlider.minValue) {
-			//TODO: FRIENDZONE DUDE
-			Debug.Log ("FRIENDZONE DUDE");
+            //TODO: FRIENDZONE DUDE
+            //Debug.Log ("FRIENDZONE DUDE");
+            pnlResults.SetActive(true);
+            sprLose.SetActive(true);
 		} else {
 			pleasureSlider.value -= amount;
 		}
@@ -169,7 +177,10 @@ public class ScoreCalculations : MonoBehaviour {
 
 		// Checks for winning state
 		if (pleasureSlider.value + pointAmount >= pleasureSlider.maxValue) {
-			Debug.Log ("You Win!");
+            pnlResults.SetActive(true);
+            sprWin.SetActive(true);
+			//Debug.Log ("You Win!");
+            
 		} else {
 			pleasureSlider.value += pointAmount;
 		}
